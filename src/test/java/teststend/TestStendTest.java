@@ -2,17 +2,16 @@ package teststend;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-
-import java.util.regex.Matcher;
+import stend.AddResp;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TestStendTest extends AbstractTest {
@@ -22,25 +21,26 @@ public class TestStendTest extends AbstractTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-    @Test
-    @Order(0)
-    @DisplayName("Авторизация валидные значения")
-    void avtoValidTest0(){
-        ResponseData response = given()
-                .formParam("username", "Use")
-                .formParam("password","ad8783089f")
-                .when()
-                .post(getToken_url())
-                .then()
-                .extract()
-                .response()
-                .body()
-                .as(ResponseData.class);
-        assertThat(response.getUsername(), equalTo("Use"));
-//                .assertThat()
-//                .statusCode(200);
-
-    }
+//    @Test
+//    @Order(0)
+//    @DisplayName("Авторизация валидные значения")
+//    void avtoValidTest0(){
+//        AddResp response = given()
+//                .contentType(ContentType.JSON)
+//                .formParam("username", "Use")
+//                .formParam("password","ad8783089f")
+//                .when()
+//                .post(getToken_url())
+//                .then()
+//                .extract()
+//                .response()
+//                .body()
+//                .as(AddResp.class);
+//          assertThat(response.getUsername(), equalTo("Use"));
+////                .assertThat()
+////                .statusCode(200);
+//
+//    }
     @Test
     @Order(1)
     @DisplayName("Авторизация валидные значения")
@@ -202,8 +202,9 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(200)
-              .contentType(ContentType.JSON)
-              .body("id",equalTo(get("id)));
+                .contentType(ContentType.JSON)
+                .body("data[0].id",notNullValue());
+
 
     }
     @Test

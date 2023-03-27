@@ -25,7 +25,30 @@ public class AbstractTest {
     protected static ResponseSpecification responseSpecification;
     protected static RequestSpecification requestSpecification;
 
-   public static String getToken() {
+    @BeforeAll
+    static void  initTest() throws IOException {
+        configureFile = new FileInputStream("src/main/resources/my.properties");
+        prop.load(configureFile);
+
+        token = prop.getProperty("X-Auth-Token");
+        token_url = prop.getProperty("token_url");
+        base_url = prop.getProperty("Base_url");
+        owner_notMe = prop.getProperty("owner");
+
+        responseSpecification = new ResponseSpecBuilder()
+                .expectContentType(ContentType.JSON)
+                .build();
+
+        requestSpecification = new RequestSpecBuilder()
+                .addQueryParam("token_url",token_url)
+                .addQueryParam("Base_url",base_url)
+                .addHeader("X-Auth-Token",token)
+                .addQueryParam("owner",owner_notMe)
+                .setContentType(ContentType.JSON)
+                .build();
+    }
+
+    public static String getToken() {
         return token;
     }
 
@@ -48,50 +71,5 @@ public class AbstractTest {
 
     public static RequestSpecification getRequestSpecification() {
         return requestSpecification;
-    }
-
-    @BeforeAll
-    static void  initTest() throws IOException {
-        configureFile = new FileInputStream("src/main/resources/my.properties");
-        prop.load(configureFile);
-
-        token = prop.getProperty("X-Auth-Token");
-        token_url = prop.getProperty("token_url");
-        base_url = prop.getProperty("Base_url");
-        owner_notMe = prop.getProperty("owner");
-
-        responseSpecification = new ResponseSpecBuilder()
-                .expectContentType(ContentType.JSON)
-                .build();
-
-        requestSpecification = new RequestSpecBuilder()
-                .addQueryParam("token_url",token_url)
-                .addQueryParam("Base_url",base_url)
-                .addHeader("X-Auth-Token",token)
-                .addQueryParam("owner",owner_notMe)
-                .setContentType(ContentType.JSON)
-                .build();
-
-//        ResponseData responseData =  given()
-//                .formParam("username", "Use")
-//                .formParam("password","ad8783089f")
-//                .when()
-//                .post(getToken_url())
-//                .then()
-//                .extract()
-//                .response()
-//                .body()
-//                .prettyPeek()
-//                .as(ResponseData.class);
-//
-//        token = responseData.getToken();
-
-
-
-
-
-
-
-
     }
 }
