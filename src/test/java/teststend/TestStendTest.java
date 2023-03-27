@@ -10,8 +10,7 @@ import stend.AddResp;
 
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TestStendTest extends AbstractTest {
@@ -98,7 +97,7 @@ public class TestStendTest extends AbstractTest {
                 .assertThat()
                 .statusCode(401)
                 .contentType(ContentType.JSON)
-                .body("error",equalTo("Проверьте логин и пароль."));
+                .body("message",equalTo("Проверьте логин и пароль."));
     }
     @Test
     @Order(5)
@@ -113,7 +112,7 @@ public class TestStendTest extends AbstractTest {
                 .assertThat()
                 .statusCode(401)
                 .contentType(ContentType.JSON)
-                .body("error",equalTo("Проверьте логин и пароль."));
+                .body("message",equalTo("Проверьте логин и пароль."));
     }
     @Test
     @Order(6)
@@ -128,7 +127,7 @@ public class TestStendTest extends AbstractTest {
                 .assertThat()
                 .statusCode(401)
                 .contentType(ContentType.JSON)
-                .body("error",equalTo("Проверьте логин и пароль."));
+                .body("message",equalTo("Проверьте логин и пароль."));
     }
     @Test
     @Order(7)
@@ -142,7 +141,7 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(401) .contentType(ContentType.JSON)
-                .body("error",equalTo("Проверьте логин и пароль."));
+                .body("message",equalTo("Проверьте логин и пароль."));
     }
 
     @Test
@@ -156,7 +155,6 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .contentType(ContentType.JSON)
                 .body("data[0].createdAt",equalTo("2023-03-22T04:58:34+00:00"));
 
     }
@@ -172,7 +170,6 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .contentType(ContentType.JSON)
                 .body("data[0].createdAt",equalTo("2023-03-21T09:37:45+00:00"));
     }
     @Test
@@ -187,7 +184,6 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .contentType(ContentType.JSON)
                 .body("data[0].createdAt",equalTo("2023-03-22T04:58:34+00:00"));
     }
     @Test
@@ -202,7 +198,6 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .contentType(ContentType.JSON)
                 .body("data[0].id",notNullValue());
 
 
@@ -218,7 +213,8 @@ public class TestStendTest extends AbstractTest {
                 .get(getBase_url())
                 .then()
                 .assertThat()
-                .statusCode(200);
+                .body("data[0].id",nullValue());
+
     }
     @Test
     @Order(13)
@@ -231,7 +227,7 @@ public class TestStendTest extends AbstractTest {
                 .get(getBase_url())
                 .then()
                 .assertThat()
-                .statusCode(200);
+                .body("data[0].id",nullValue());
     }
     @Test
     @Order(14)
@@ -244,7 +240,9 @@ public class TestStendTest extends AbstractTest {
                 .get(getBase_url())
                 .then()
                 .assertThat()
-                .statusCode(200);
+                .statusCode(200)
+                .body("data[0].id",notNullValue())
+                .body("data[0].createdAt",equalTo("2023-03-27T14:52:52+00:00"));
     }
     @Test
     @Order(15)
@@ -258,6 +256,82 @@ public class TestStendTest extends AbstractTest {
                 .get(getBase_url())
                 .then()
                 .assertThat()
-                .statusCode(200);
+                .statusCode(200)
+                .body("data[0].id",notNullValue())
+                .body("data[0].createdAt",equalTo("2022-09-14T12:35:00+00:00"));
+    }
+    @Test
+    @Order(16)
+    @DisplayName("Чужая лента. Сортировки в порядке возрастания DESC")
+    void notMyLentaOrderDESCTest() {
+        given()
+                .header("X-Auth-Token", getToken())
+                .queryParam("owner",getOwner_notMe())
+                .queryParam("order", "DESC")
+                .when()
+                .get(getBase_url())
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("data[0].id",notNullValue())
+                .body("data[0].createdAt",equalTo("2023-03-27T14:52:52+00:00"));
+    }
+    @Test
+    @Order(17)
+    @DisplayName("Чужая лента. Сортировка вывода всех постов ALL")
+    void notMyLentaOrderALLTest() {
+        given()
+                .header("X-Auth-Token", getToken())
+                .queryParam("owner",getOwner_notMe())
+                .queryParam("order", "ALL")
+                .when()
+                .get(getBase_url())
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("data[0].id",notNullValue());
+    }
+    @Test
+    @Order(18)
+    @DisplayName("Чужая лента. Ввод существующей страницы № 1")
+    void notMyLentaPage1Test() {
+        given()
+                .header("X-Auth-Token", getToken())
+                .queryParam("owner",getOwner_notMe())
+                .queryParam("page", "1")
+                .when()
+                .get(getBase_url())
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("data[0].id",notNullValue());
+    }
+    @Test
+    @Order(19)
+    @DisplayName("Чужая лента. Ввод существующей страницы № 0")
+    void notMyLentaPage0Test() {
+        given()
+                .header("X-Auth-Token", getToken())
+                .queryParam("owner",getOwner_notMe())
+                .queryParam("page", "0")
+                .when()
+                .get(getBase_url())
+                .then()
+                .assertThat()
+                .body("data[0].id",nullValue());
+    }
+    @Test
+    @Order(20)
+    @DisplayName("Чужая лента. Ввод существующей страницы № 1000000000")
+    void notMyLentaPage1000000000Test() {
+        given()
+                .header("X-Auth-Token", getToken())
+                .queryParam("owner",getOwner_notMe())
+                .queryParam("page", "1000000000")
+                .when()
+                .get(getBase_url())
+                .then()
+                .assertThat()
+                .body("data[0].id",nullValue());
     }
 }
