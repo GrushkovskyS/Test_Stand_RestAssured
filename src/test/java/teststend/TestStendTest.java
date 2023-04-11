@@ -2,6 +2,7 @@ package teststend;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -20,45 +21,28 @@ public class TestStendTest extends AbstractTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
-//    @Test
-//    @Order(0)
-//    @DisplayName("Авторизация валидные значения")
-//    void avtoValidTest0(){
-//        AddResp response = given()
-//                .contentType(ContentType.JSON)
-//                .formParam("username", "Use")
-//                .formParam("password","ad8783089f")
-//                .when()
-//                .post(getToken_url())
-//                .then()
-//                .extract()
-//                .response()
-//                .body()
-//                .as(AddResp.class);
-//          assertThat(response.getUsername(), equalTo("Use"));
-////                .assertThat()
-////                .statusCode(200);
-//
-//    }
     @Test
     @Order(1)
     @DisplayName("Авторизация валидные значения")
-    void avtoValidTest() {
-        given()
+    void avtoValidTest0(){
+        JsonPath jsonPath = given()
                 .formParam("username", "Use")
-                .formParam("password", "ad8783089f")
+                .formParam("password","ad8783089f")
                 .when()
                 .post(getToken_url())
                 .then()
                 .assertThat()
                 .statusCode(200)
-                .contentType(ContentType.TEXT);
+                .extract()
+                .jsonPath();
+                 assertThat(jsonPath.get("username"), equalTo("Use"));
     }
+
     @Test
     @Order(2)
     @DisplayName("Авторизация не валидные значения")
     void avtoNotValid1Test() {
-        given()
+        JsonPath jsonPath = given()
                 .formParam("username", "U1")
                 .formParam("password", "f89412c11b")
                 .when()
@@ -66,14 +50,15 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(401)
-                .contentType(ContentType.TEXT)
-                .body("error",equalTo("Проверьте логин и пароль."));
+                .extract()
+                .jsonPath();
+                assertThat(jsonPath.get("message"),equalTo("Проверьте логин и пароль."));
     }
     @Test
     @Order(3)
     @DisplayName("Авторизация не валидные значения")
     void avtoNotValid2Test() {
-        given()
+        JsonPath jsonPath = given()
                 .formParam("username", "Vasiliev@!%^&*()_+=-")
                 .formParam("password", "7bcd847f04")
                 .when()
@@ -81,14 +66,15 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(401)
-                .contentType(ContentType.TEXT)
-                .body("error",equalTo("Проверьте логин и пароль."));
+                .extract()
+                .jsonPath();
+        assertThat(jsonPath.get("message"),equalTo("Проверьте логин и пароль."));
     }
     @Test
     @Order(4)
     @DisplayName("Авторизация не валидные значения")
     void avtoNotValid3Test() {
-        given()
+        JsonPath jsonPath = given()
                 .formParam("username", "Vova29292836546709876")
                 .formParam("password", "6f7f0a52ac")
                 .when()
@@ -96,14 +82,15 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(401)
-                .contentType(ContentType.JSON)
-                .body("message",equalTo("Проверьте логин и пароль."));
+                .extract()
+                .jsonPath();
+        assertThat(jsonPath.get("message"),equalTo("Проверьте логин и пароль."));
     }
     @Test
     @Order(5)
     @DisplayName("Авторизация не валидные значения")
     void avtoNotValid4Test() {
-        given()
+        JsonPath jsonPath = given()
                 .formParam("username", "КириллКиряя")
                 .formParam("password", "7e8b7954d0")
                 .when()
@@ -111,14 +98,15 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(401)
-                .contentType(ContentType.JSON)
-                .body("message",equalTo("Проверьте логин и пароль."));
+                .extract()
+                .jsonPath();
+        assertThat(jsonPath.get("message"),equalTo("Проверьте логин и пароль."));
     }
     @Test
     @Order(6)
     @DisplayName("Авторизация не валидные значения")
     void avtoNotValid5Test() {
-        given()
+        JsonPath jsonPath = given()
                 .formParam("username", "Vasiapupki")
                 .formParam("password", "")
                 .when()
@@ -126,22 +114,25 @@ public class TestStendTest extends AbstractTest {
                 .then()
                 .assertThat()
                 .statusCode(401)
-                .contentType(ContentType.JSON)
-                .body("message",equalTo("Проверьте логин и пароль."));
+                .extract()
+                .jsonPath();
+                assertThat(jsonPath.get("message"),equalTo("Проверьте логин и пароль."));
     }
     @Test
     @Order(7)
     @DisplayName("Авторизация не валидные значения")
     void avtoNotValid6Test() {
-        given()
+       JsonPath jsonPath = given()
                 .formParam("username", "")
                 .formParam("password", "")
                 .when()
                 .post(getToken_url())
                 .then()
                 .assertThat()
-                .statusCode(401) .contentType(ContentType.JSON)
-                .body("message",equalTo("Проверьте логин и пароль."));
+               .statusCode(401)
+               .extract()
+               .jsonPath();
+                assertThat(jsonPath.get("message"),equalTo("Проверьте логин и пароль."));
     }
 
     @Test
